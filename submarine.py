@@ -39,13 +39,15 @@ For updating position and depth, we could loop over this with individual functio
 Thinking about a class structure, we will want a Submarine Class (to store position and depth, and mod functions), a Pilot Class (to go through directions txt file) and 
 
 Possible extensions: 
-    -   draw/graph out the route and depth as we go or at the end. using matplotlib
+    -   draw/graph out the route and depth as we go or at the end
     -   adding depth/position limitations based on some terrain?
         - think of 2d matrix with depth values could give valid positions
     -   scope to add back/left/right to position
         - either having x&y position
         - or consider current direction of sub (heading) when moving forward
     -   Store a log of past positions and depth
+    -   add some input checking / exception handling
+    -   add speed to distance?
 """
 
 
@@ -55,14 +57,20 @@ class Submarine:
         self.depth = 0 # init to 0
         self.color = "yellow"
 
-    def update_horizontal_position(self, forward_change):
-        self.horizontal_pos += forward_change
+    def product(self):
+        return self.horizontal_pos * self.depth
 
-    def update_depth(self, depth_change):
-        self.depth += depth_change
-        # check if depth value is negative (i.e. above sea level)
-        if self.depth < 0:
-            self.depth = 0
+    def update_position(self, command, value):
+        if command == 'forward':
+            self.horizontal_pos += value
+        elif command == 'down':
+            self.depth += value
+        elif command == 'up':
+            self.depth -= value
+            if self.depth < 0:
+                self.depth = 0
+        else:
+            print(f"Invalid command found: {command}")
 
 
 class Pilot:
@@ -73,28 +81,26 @@ class Pilot:
         for instruction in instructions:
             command, value = instruction.split()
             value = int(value)
-            if command == 'forward':
-                self.submarine.update_horizontal_position(value)
-            elif command == 'down':
-                self.submarine.update_depth(value)
-            elif command == 'up':
-                self.submarine.update_depth(-value)
+            self.submarine.update_position(command, value)
 
     def output_status(self):
         print(f"Horizontal Position: {self.submarine.horizontal_pos}")
         print(f"Depth: {self.submarine.depth}")
-        print(f"Product: {self.submarine.horizontal_pos * self.submarine.depth}")
+        print(f"Product: {self.submarine.product()}")
 
+
+def read_instructions(filename):
+    try:
+        with open(filename) as fileobject:
+            instructions = [line.strip() for line in fileobject]
+            return instructions
+    except FileNotFoundError:
+        print(f"File {filename} not found.")
+        return
 
 def main():
-    try:
-        # open input file
-        with open("submarine_kata_input.txt") as fileobject:
-            # print(fileobject.readlines()) # check input
-            instructions = [line.strip() for line in fileobject]
-    except FileNotFoundError:
-        print("File not found. Please make sure the input file exists.")
-        return
+    instructions_file = "submarine_kata_input.txt"
+    instructions = read_instructions(instructions_file)
 
     submarine = Submarine()
     pilot = Pilot(submarine)
