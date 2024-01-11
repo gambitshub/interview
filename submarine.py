@@ -98,6 +98,7 @@ def read_instructions(filename):
         print(f"File {filename} not found.")
         return
 
+
 def main():
     instructions_file = "submarine_kata_input.txt"
     instructions = read_instructions(instructions_file)
