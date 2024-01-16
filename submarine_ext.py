@@ -1,14 +1,12 @@
 class Submarine:
     def __init__(self, matrix_size):
         self.matrix_size = matrix_size
-        # Extract individual dimensions
-        rows, columns = self.matrix_size
-        self.position_history = [[-1] * columns for _ in range(rows)]
-        self.current_position = (rows // 2, columns // 2)
+        rows, columns = self.matrix_size         # Extract individual dimensions
+        self.position_history = [[-1] * columns for _ in range(rows)]   # Init 2D position matrix
+        self.current_position = (rows // 2, columns // 2)   # init starting position to middle
         self.current_depth = 0
         self.color = "yellow"
         self.valid_commands = ['forward', 'reverse', 'left', 'right', 'down', 'up']
-
         # Initialize starting position with depth 0
         self.update_matrix(*self.current_position, self.current_depth)
 
